@@ -3,6 +3,7 @@ import time
 import sys
 import os
 from dotenv import load_dotenv
+import argparse
 
 # Configurations
 load_dotenv()

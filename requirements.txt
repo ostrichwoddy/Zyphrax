@@ -1,0 +1,17 @@
+# Core libraries
+requests==2.33.1
+python-magic==0.4.27
+pefile==2024.8.26
+reportlab==4.4.10
+fpdf2==2.8.7
+
+# Utility libraries
+certifi==2026.2.25
+charset-normalizer==3.4.7
+idna==3.11
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+packaging==26.0
+python-dotenv==1.2.2
+six==1.17.0
+urllib3==2.6.3

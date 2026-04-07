@@ -65,7 +65,7 @@ def get_file_metadata(file_path):
     metadata["apparent_extension"] = os.path.splitext(file_path)[1].lower()
     metadata["file_size"] = os.path.getsize(file_path)
     metadata["filetype"] = mimetypes.guess_type(file_path)[0] or "Unknown"
-    metadata["actual filetype (detected through magic bytes)"] = detect_actual_filetype(file_path)
+    metadata["Magic bytes filetype"] = detect_actual_filetype(file_path)
     metadata["entropy"] = calculate_entropy(file_path)
     metadata["md5"] = hash_file(file_path, "md5")
     metadata["sha1"] = hash_file(file_path, "sha1")

@@ -12,11 +12,10 @@ POLL_INTERVAL = 60  # seconds
 # ---------------- UTILS ----------------
 def upload_file(file_path, api_key=None):
     """
-    Upload a file to VirusTotal and return analysis ID or existing SHA256.
+    Upload a file to VirusTotal and return analysis ID, SHA256, or existing analysis URL.
     """
     api_key = api_key or API_KEY
     if not api_key:
-        print("❌ No API key provided. Set VT_API_KEY or pass api_key argument.")
         return None
 
     url = "https://www.virustotal.com/api/v3/files"
@@ -26,41 +25,29 @@ def upload_file(file_path, api_key=None):
         with open(file_path, "rb") as f:
             files = {"file": f}
             response = requests.post(url, headers=headers, files=files)
-    except Exception as e:
-        print(f"❌ Failed to open or upload file: {e}")
+    except Exception:
         return None
 
     data = response.json()
 
     if response.status_code == 409:
-        # Already submitted
+        # File already submitted
         sha256 = data.get("meta", {}).get("file_info", {}).get("sha256")
         existing_url = data.get("error", {}).get("links", {}).get("self")
-        print(f"⚠️ File already submitted. SHA256: {sha256}")
-
         if existing_url:
             return existing_url
         elif sha256:
             return sha256
         else:
-            print("❌ Could not determine existing analysis ID or SHA256. Exiting.")
             return None
 
     elif response.status_code != 200:
-        print(f"❌ HTTP Error {response.status_code} uploading file:")
-        print(response.text)
         return None
 
     if "error" in data:
-        err = data["error"]
-        print(f"❌ API Error: {err.get('code')} - {err.get('message')}")
         return None
 
     analysis_id = data.get("data", {}).get("id")
-    if not analysis_id:
-        print("❌ Unexpected response format:", data)
-        return None
-
     return analysis_id
 
 
@@ -83,47 +70,35 @@ def get_report(analysis_identifier, api_key=None):
     while True:
         try:
             response = requests.get(url, headers=headers)
-        except Exception as e:
-            print(f"❌ Failed to fetch report: {e}")
+        except Exception:
             return None
 
         if response.status_code == 429:
-            print("🚫 Rate limit reached. Waiting 60 seconds...")
             time.sleep(60)
             continue
         elif response.status_code != 200:
-            print(f"❌ HTTP Error {response.status_code} fetching report:")
-            print(response.text)
             return None
 
         data = response.json()
         if "error" in data:
-            err = data["error"]
-            print(f"❌ API Error fetching report: {err.get('code')} - {err.get('message')}")
             return None
 
         status = data.get("data", {}).get("attributes", {}).get("status")
         if status == "completed":
             return data
         else:
-            print("⏳ Waiting for analysis to complete...")
+            print("\nWaiting for analysis to complete ..")
             time.sleep(POLL_INTERVAL)
 
 
-def print_vt_summary(vt_json):
+def get_vt_summary_dict(vt_json):
     """
-    Print a readable summary of the VT scan results.
+    Convert VT scan results into a dictionary with friendly names.
     """
-    data = vt_json.get("data", {})
-    attributes = data.get("attributes", {})
+    attributes = vt_json.get("data", {}).get("attributes", {})
+    stats = attributes.get("stats", {})
 
-    stats = attributes.get('stats', {})
-    print("\nScan Summary:")
-
-    # Original keys from VT
-    vt_keys = ['malicious', 'suspicious', 'harmless', 'undetected', 'type-unsupported', 'failure', 'timeout']
-
-    # Friendly mapping
+    # Mapping of VT keys to friendly names
     key_map = {
         'malicious': 'Malware',
         'suspicious': 'Suspicious',
@@ -134,41 +109,41 @@ def print_vt_summary(vt_json):
         'timeout': 'Timeouts'
     }
 
-    for key in vt_keys:
-        display_name = key_map.get(key, key)
-        print(f"{display_name}: {stats.get(key, 0)}")
+    summary = {display_name: stats.get(vt_key, 0) for vt_key, display_name in key_map.items()}
 
+    # Add total vendors
     total_vendors = len(attributes.get('results', {}))
-    print(f"Total vendors: {total_vendors}")
+    summary['Total vendors'] = total_vendors
+
+    return summary
 
 
-def scanfile(file_path, api_key=None, print_summary=True):
+def scanfile(file_path, api_key=None, return_summary=True):
     """
-    Upload a file and print VT analysis report.
+    Upload a file and return VT analysis report as a dictionary.
     """
     analysis_identifier = upload_file(file_path, api_key)
     if not analysis_identifier:
-        print("❌ Upload failed. Exiting.")
         return None
 
     report = get_report(analysis_identifier, api_key)
     if not report:
-        print("❌ Could not retrieve report. Exiting.")
         return None
 
-    if print_summary:
-        print_vt_summary(report)
+    if return_summary:
+        return get_vt_summary_dict(report)
     else:
-        print(report)
-
-    return report
+        return report
 
 
 # ----------------- MAIN -----------------
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("❌ Usage: python vt_scan.py <file_path>")
         sys.exit(1)
 
     file_path = sys.argv[1]
-    scanfile(file_path)
+    result = scanfile(file_path)
+
+    if result:
+        for k, v in result.items():
+            print(f"{k}: {v}")

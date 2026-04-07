@@ -115,6 +115,14 @@ def get_vt_summary_dict(vt_json):
     total_vendors = len(attributes.get('results', {}))
     summary['Total vendors'] = total_vendors
 
+    # Verdict logic
+    if summary['Malware'] > 0:
+        summary['Verdict'] = "Malware"
+    elif summary['Suspicious'] > 0:
+        summary['Verdict'] = "Suspicious / Possibly malware"
+    else:
+        summary['Verdict'] = "Clean"
+
     return summary
 
 

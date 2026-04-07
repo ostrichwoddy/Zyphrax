@@ -4,6 +4,25 @@ import mimetypes
 import math
 from datetime import datetime
 import magic  # pip install python-magic
+import re
+
+
+def extract_strings(file_path, min_length=4):
+    """
+    Extract printable ASCII strings from a file.
+
+    Args:
+        file_path (str): Path to the file.
+        min_length (int): Minimum string length to include.
+
+    Returns:
+        List[str]: A list of strings found in the file.
+    """
+    with open(file_path, "rb") as f:
+        data = f.read()
+    # Match sequences of printable ASCII characters
+    strings = re.findall(rb"[ -~]{%d,}" % min_length, data)
+    return [s.decode(errors='ignore') for s in strings]
 
 def calculate_entropy(file_path):
     """Calculate Shannon entropy of a file."""
@@ -59,5 +78,7 @@ def get_file_metadata(file_path):
     metadata["readable"] = os.access(file_path, os.R_OK)
     metadata["writable"] = os.access(file_path, os.W_OK)
     metadata["executable"] = os.access(file_path, os.X_OK)
+
+    metadata["strings"] = extract_strings(file_path, min_length=4)
 
     return metadata

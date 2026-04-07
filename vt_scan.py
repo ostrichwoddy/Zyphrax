@@ -116,13 +116,6 @@ def print_vt_summary(vt_json):
     """
     data = vt_json.get("data", {})
     attributes = data.get("attributes", {})
-    meta = vt_json.get("meta", {})
-
-    file_info = meta.get('file_info', {})
-    print(f"\nFile size: {file_info.get('size')} bytes")
-    print(f"MD5: {file_info.get('md5')}")
-    print(f"SHA1: {file_info.get('sha1')}")
-    print(f"SHA256: {file_info.get('sha256')}")
 
     stats = attributes.get('stats', {})
     print("\nScan Summary:")

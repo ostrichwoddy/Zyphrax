@@ -1,8 +1,5 @@
 # Zyphrax
-
-A lightweight command-line malware analysis tool that performs static file inspection, heuristic risk scoring, optional VirusTotal scanning, and PDF report generation.
-
-This tool is designed for educational, research, and defensive security use cases.
+A lightweight command-line malware analysis tool designed for linux systems that performs static file inspection, heuristic risk scoring, optional VirusTotal scanning, and PDF report generation.
 
 ---
 
@@ -44,11 +41,7 @@ Each indicator contributes to a risk score that determines the final verdict.
 
 ### VirusTotal Integration (Optional)
 
-If enabled, the tool can:
-
-- Submit files or hashes to VirusTotal
-- Retrieve scan results
-- Display detection summary and verdict
+If enabled, the tool can 
 
 ---
 

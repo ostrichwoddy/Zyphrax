@@ -68,7 +68,7 @@ Generates a structured PDF report containing:
 
 ## Contributing
 
-Contributions are welcome! This project is a learning-focused malware analysis tool, and any improvements are appreciated.
+Community contributions are welcome. Please follow the following guidelines:
 
 ### Ways to contribute
 

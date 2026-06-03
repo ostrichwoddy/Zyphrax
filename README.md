@@ -1,4 +1,4 @@
-# Malware Analysis Tool
+# Zyphrax
 
 A lightweight command-line malware analysis tool that performs static file inspection, heuristic risk scoring, optional VirusTotal scanning, and PDF report generation.
 

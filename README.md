@@ -41,7 +41,7 @@ Each indicator contributes to a risk score that determines the final verdict.
 
 ### VirusTotal Integration (Optional)
 
-If enabled, the 
+If enabled, the tool can upload files to virustotal and return scan results. However, the user would have to configure a virustotal API key and store it in .env within the project directory for this to work.
 
 ---
 
@@ -61,11 +61,11 @@ Generates a structured PDF report containing:
 
 ```text
 .
-├── analyzer.py        # Main CLI application
+├── zyphrax.py        # Main CLI application
 ├── metadata.py        # File metadata + string extraction
-├── vt_scan.py         # VirusTotal API integration
-└── report.pdf         # Generated output (optional)
+└── vt_scan.py         # VirusTotal API integration
 ```
+
 ## Contributing
 
 Contributions are welcome! This project is a learning-focused malware analysis tool, and any improvements are appreciated.

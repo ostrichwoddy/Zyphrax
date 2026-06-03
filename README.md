@@ -41,7 +41,7 @@ Each indicator contributes to a risk score that determines the final verdict.
 
 ### VirusTotal Integration (Optional)
 
-If enabled, the tool can 
+If enabled, the 
 
 ---
 
